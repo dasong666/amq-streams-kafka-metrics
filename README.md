@@ -3,7 +3,7 @@ Putting together the components and connecting the dots using Grafana Dashboards
 
 ![image](component.png)
 
-## Prerequisistes:
+## Prerequisites:
 
 Install the following operators
 * AMQ Streams
