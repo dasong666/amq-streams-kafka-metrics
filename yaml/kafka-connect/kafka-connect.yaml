@@ -1,0 +1,37 @@
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaConnect
+metadata:
+  name: mongodb-sink-connect-cluster
+  annotations:
+    strimzi.io/use-connector-resources: "true"
+spec:
+  version: 3.6.0
+  replicas: 1
+  bootstrapServers: <your-project>-cluster-kafka-bootstrap:9092
+  metricsConfig:
+    type: jmxPrometheusExporter
+    valueFrom:
+      configMapKeyRef:
+        name: kafka-connect-metrics
+        key: kafka-connect-metrics.yaml
+  build:
+    output:
+      type: docker
+      image: "image-registry.openshift-image-registry.svc:5000/<your-project>/mongodb-sink-connect:latest"
+    plugins:
+      - name: mongo-kafka-connect
+        artifacts:
+          - type: maven
+            repository: https://repo1.maven.org/maven2
+            group: org.mongodb.kafka
+            artifact: mongo-kafka-connect
+            version: 1.8.1
+  config:
+    group.id: mongo-connect
+    key.converter: org.apache.kafka.connect.json.JsonConverter
+    value.converter: org.apache.kafka.connect.json.JsonConverter
+    key.converter.schemas.enable: false
+    value.converter.schemas.enable: false
+    offset.storage.topic: mongo-connect-offsets
+    config.storage.topic: mongo-connect-configs
+    status.storage.topic: mongo-connect-status
