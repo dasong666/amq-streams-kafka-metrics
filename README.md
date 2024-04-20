@@ -19,7 +19,7 @@ External image registry and source repository access
 
 
 ## Apply the CRD resources in this order
-....
+```
 Kafka/KafkaConnect:
 oc -n <your-namespace> apply -f kafka-metrics-configmap.yaml
 oc -n <your-namespace> apply -f kafka-cluster.yaml
@@ -38,4 +38,11 @@ oc -n <your-namespace> apply -f grafana.yaml
 oc -n <your-namespace> expose service grafana-service
 oc -n <your-namespace> apply -f grafana-datasource.yaml
 oc -n <your-namespace> apply -f grafana-*-dashboard.yaml
-....
+```
+
+## Post Installation Steps
+* Use the grafana route to launch the Grafana console
+* Test the Prometheus Data Source connection in Grafana
+* If everything is setup and configured correctly following all the steps, you should see dashboards such as these:
+
+![image](dash1.png)
