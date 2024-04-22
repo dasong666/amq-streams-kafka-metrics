@@ -21,23 +21,31 @@ External image registry and source repository access
 ## Apply the CRD resources in this order
 ```
 Kafka/KafkaConnect:
-oc -n <your-namespace> apply -f kafka-metrics-configmap.yaml
-oc -n <your-namespace> apply -f kafka-cluster.yaml
-oc -n <your-namespace> apply -f kafka-topics.yaml
-oc -n <your-namespace> apply -f kafka-connect-demo.yaml
-oc -n <your-namespace> apply -f kafka-connect-metrics-example.yaml
-oc -n <your-namespace> apply -f kafka-connector-mongodb.yaml
+oc -n <your-namespace> apply -f yaml/kafka/kafka-metrics-configmap.yaml
+oc -n <your-namespace> apply -f yaml/kafka/kafka-cluster.yaml
+oc -n <your-namespace> apply -f yaml/kafka/kafka-topics.yaml
+oc -n <your-namespace> apply -f yaml/kafka-connect/kafka-connect-metrics-example.yaml
+oc -n <your-namespace> apply -f yaml/kafka-connect/kafka-connect.yaml
+oc -n <your-namespace> apply -f yaml/kafka-connect/kafka-connector-mongodb.yaml
+
+helm repo add bitnami https://charts.bitnami.com/bitnami
+
+helm install mongodb bitnami/mongodb \
+--set podSecurityContext.fsGroup="",containerSecurityContext.enabled=false,podSecurityContext.enabled=false,auth.enabled=false --version 13.6.0 \
+-n <your-namespace>
 
 Prometheus:
-oc -n <your-namespace> apply -f prometheus-additional-scrape-configmap.yaml
-oc -n <your-namespace> apply -f prometheus.yaml
-oc -n <your-namespace> apply -f prometheus-strimzi-pod-monitor.yaml
+oc -n <your-namespace> apply -f yaml/prometheus/prometheus-additional-scrape-configmap.yaml
+oc -n <your-namespace> apply -f yaml/prometheus/prometheus.yaml
+oc -n <your-namespace> apply -f yaml/prometheus/prometheus-strimzi-pod-monitor.yaml
 
 Grafana:
-oc -n <your-namespace> apply -f grafana.yaml
+oc -n <your-namespace> apply -f yaml/grafana/grafana.yaml
 oc -n <your-namespace> expose service grafana-service
-oc -n <your-namespace> apply -f grafana-datasource.yaml
-oc -n <your-namespace> apply -f grafana-*-dashboard.yaml
+oc -n <your-namespace> apply -f yaml/grafana/grafana-datasource.yaml
+oc -n <your-namespace> apply -f yaml/grafana/grafana-*-dashboard.yaml
+Or
+find . -type f -name "grafana*dashboard*.yaml" -exec sh -c 'oc apply -f "$0"' {} \;
 ```
 
 ## Post Installation Steps
